@@ -1,0 +1,10 @@
+#carouselWindow{
+	width: 1280px;
+	height: 720px;
+	background-color: gray;
+}
+
+#displays{
+	width: 100%;
+	height: 100%;
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>一周作品展示</title>
+		<link rel="stylesheet" type="text/css" href="settings/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="settings/css/displayStyle.css">
+		<script type="text/javascript" src="settings/js/jquery-latest.js"></script>
+		<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+		<script type="text/javascript" src="settings/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="settings/js/vue.min.js"></script>
+		<script type="text/javascript" src="settings/js/displayFunction.js"></script>
+	</head>
+	<body>
+		<div id="displays" align="center">
+			<div id="carouselWindow" class="carousel slide" data-ride="carousel">
+				<ul id="picList" class="carousel-indicators">
+					<li data-target="#carouselWindow" data-slide-to="0" class="active"></li>
+					<li v-for="n in 6" v-if="showList[n]" data-target="#carouselWindow" v-bind:data-slide-to="n"></li>
+				</ul>
+				<div class="carousel-inner">
+					<div v-if="noWork == 7" class="carousel-item">
+						<img class="d-block w-100 rounded" src="settings/default.png">
+					</div>
+					<div v-for="n in 7" v-if="isShown[n-1]" class="carousel-item" v-bind:imgNum="n-1">
+						<img class="img-fluid rounded" v-bind:src=("imgs/"+choosenWeek+"/"+n+".jpg") onerror="countNoWork(this)">
+					</div>
+				</div>
+				<a class="carousel-control-prev" href="#carouselWindow" data-slide="prev">
+					<span class="carousel-control-prev-icon"></span>
+				</a>
+				<a class="carousel-control-next" href="#carouselWindow" data-slide="next">
+					<span class="carousel-control-next-icon"></span>
+				</a>
+			</div>
+			<hr />
+			<label>当前展示周:</label>
+			<select id="selectedWeek" @change="selectWeek" v-bind:value="choosenWeek">
+				<option v-for="n in week" onclick="selectClick()" v-bind:value="n">第{{n}}周</option>
+			</select>
+			<hr />
+			<hr />
+			<hr />
+			<hr />
+			<hr />
+		</div>
+	</body>
+</html>
