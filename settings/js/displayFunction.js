@@ -1,15 +1,17 @@
 var curWeek = getCurrentWeek();
+var weekDay = new Date().getDay();
 var displaysData = {
 	week : curWeek,
 	choosenWeek : curWeek,
 	showList : [true,true,true,true,true,true,true],
 	isShown : [true,true,true,true,true,true,true],
-	noWork : 0
+	noWork : 0,
+	day : weekDay,
+	carouselMode : true,
+	cardMode : false
 }
 
 $(function(){
-
-	
 
 	var displays = new Vue({
 		el : '#displays',
@@ -34,11 +36,21 @@ $(function(){
 					this.$data.showList[i] = true;
 					this.$data.isShown[i] = true;
 				}
+			},
+			toCarouselMode : function(){
+				$('#vmBtn').removeClass('active');
+				$('#cmBtn').addClass('active');
+				this.$data.carouselMode = true;
+				this.$data.cardMode = false;
+			},
+			toCardMode : function(){
+				$('#cmBtn').removeClass('active');
+				$('#vmBtn').addClass('active');
+				this.$data.carouselMode = false;
+				this.$data.cardMode = true;
 			}
 		}
 	});
-	
-	
 });
 
 function countNoWork(obj){
@@ -93,4 +105,9 @@ function updatePicDiv(obj){
 	}
 	$($('.carousel-inner')[0].firstChild).addClass("active");
 	$('#carouselWindow').carousel('cycle');
+}
+
+function viewModal(obj){
+	$("#modalHeadInfo").html($(obj).prev().html());
+	$("#modalBodyContent").html($(obj).html());
 }
