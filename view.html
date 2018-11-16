@@ -6,43 +6,204 @@
 		<link rel="stylesheet" type="text/css" href="settings/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="settings/css/displayStyle.css">
 		<script type="text/javascript" src="settings/js/jquery-latest.js"></script>
-		<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+		<script type="text/javascript" src="settings/js/popper.min.js"></script>
 		<script type="text/javascript" src="settings/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="settings/js/vue.min.js"></script>
 		<script type="text/javascript" src="settings/js/displayFunction.js"></script>
 	</head>
 	<body>
-		<div id="displays" align="center">
-			<div id="carouselWindow" class="carousel slide" data-ride="carousel">
-				<ul id="picList" class="carousel-indicators">
-					<li data-target="#carouselWindow" data-slide-to="0" class="active"></li>
-					<li v-for="n in 6" v-if="showList[n]" data-target="#carouselWindow" v-bind:data-slide-to="n"></li>
-				</ul>
-				<div class="carousel-inner">
-					<div v-if="noWork == 7" class="carousel-item">
-						<img class="d-block w-100 rounded" src="settings/default.png">
+		<div class="jumbotron text-center" style="margin-bottom:0">
+			<h1>我的作品</h1>
+		</div>
+		<div class="container" id="displays">
+			<div class="row">
+				<div class="col-md-2" id="userInfo" align="center">
+					<div class="row">
+						<div class="col" style="padding-top: 50px;">
+							<img class="rounded-circle img-fluid img-thumbnail" src="settings/head.jpg" />
+						</div>
 					</div>
-					<div v-for="n in 7" v-if="isShown[n-1]" class="carousel-item" v-bind:imgNum="n-1">
-						<img class="img-fluid rounded" v-bind:src=("imgs/"+choosenWeek+"/"+n+".jpg") onerror="countNoWork(this)">
+					<div class="row">
+						<div class="col">
+							<label>当前展示周:</label>
+							<select id="selectedWeek" @change="selectWeek" v-bind:value="choosenWeek">
+								<option v-for="n in week" v-bind:value="n">第{{n}}周</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<label for="weekProgress" style="margin-top: 20px;">当前周进度:</label>
+							<span id="weekProgress" class="progress" style="margin-bottom: 20px;">
+								<div class="progress-bar" v-bind:style="{width : (day / 7 * 100) + '%'}"></div>
+							</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<div class="btn-group-vertical" style="margin-top: 20px;margin-bottom: 20px;">
+								<button id="cmBtn" type="button" class="btn btn-info active" @click="toCarouselMode">轮播模式</button>
+								<button id="vmBtn" type="button" class="btn btn-info" @click="toCardMode">浏览模式</button>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<button class="btn btn-toolbar" style="margin-top: 20px;" data-toggle="modal" data-target="#helpModal">点我查看使用说明</button>
+						</div>
 					</div>
 				</div>
-				<a class="carousel-control-prev" href="#carouselWindow" data-slide="prev">
-					<span class="carousel-control-prev-icon"></span>
-				</a>
-				<a class="carousel-control-next" href="#carouselWindow" data-slide="next">
-					<span class="carousel-control-next-icon"></span>
-				</a>
+				<div class="col-md-10" style="padding: 50px;">
+					<div v-if="carouselMode" id="carouselWindow" class="carousel slide" data-ride="carousel">
+						<ul id="picList" class="carousel-indicators">
+							<li data-target="#carouselWindow" data-slide-to="0" class="active"></li>
+							<li v-for="n in 6" v-if="showList[n]" data-target="#carouselWindow" v-bind:data-slide-to="n"></li>
+						</ul>
+						<div class="carousel-inner">
+							<div v-if="noWork == 7" class="carousel-item">
+								<img class="d-block w-100 rounded" src="settings/default.png">
+							</div>
+							<div v-for="n in 7" v-if="isShown[n-1]" class="carousel-item" v-bind:imgNum="n-1">
+								<img class="img-fluid rounded" v-bind:src=("imgs/"+choosenWeek+"/"+n+".jpg") onerror="countNoWork(this)">
+							</div>
+						</div>
+						<a class="carousel-control-prev" href="#carouselWindow" data-slide="prev">
+							<span class="carousel-control-prev-icon"></span>
+						</a>
+						<a class="carousel-control-next" href="#carouselWindow" data-slide="next">
+							<span class="carousel-control-next-icon"></span>
+						</a>
+					</div>
+					<div v-if="cardMode">
+						<div class="row">
+							<div class="col">
+								<div class="card">
+									<div class="card-head text-center">星期一</div>
+									<div class="card-body" data-toggle="modal" data-target="#cardModal" onclick="viewModal(this)">
+										<img class="img-fluid rounded" v-bind:src=("imgs/"+choosenWeek+"/"+1+".jpg") onerror="this.src='settings/default.png'">
+									</div>
+								</div>
+							</div>
+							<div class="col">
+								<div class="card">
+									<div class="card-head text-center">星期二</div>
+									<div class="card-body" data-toggle="modal" data-target="#cardModal" onclick="viewModal(this)">
+										<img class="img-fluid rounded" v-bind:src=("imgs/"+choosenWeek+"/"+2+".jpg") onerror="this.src='settings/default.png'">
+									</div>
+								</div>
+							</div>
+							<div class="col">
+								<div class="card">
+									<div class="card-head text-center">星期三</div>
+									<div class="card-body" data-toggle="modal" data-target="#cardModal" onclick="viewModal(this)">
+										<img class="img-fluid rounded" v-bind:src=("imgs/"+choosenWeek+"/"+3+".jpg") onerror="this.src='settings/default.png'">
+									</div>
+								</div>
+							</div>
+							<div class="col">
+								<div class="card">
+									<div class="card-head text-center">星期四</div>
+									<div class="card-body" data-toggle="modal" data-target="#cardModal" onclick="viewModal(this)">
+										<img class="img-fluid rounded" v-bind:src=("imgs/"+choosenWeek+"/"+4+".jpg") onerror="this.src='settings/default.png'">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<div class="card">
+									<div class="card-head text-center">星期五</div>
+									<div class="card-body" data-toggle="modal" data-target="#cardModal" onclick="viewModal(this)">
+										<img class="img-fluid rounded" v-bind:src=("imgs/"+choosenWeek+"/"+5+".jpg") onerror="this.src='settings/default.png'">
+									</div>
+								</div>
+							</div>
+							<div class="col">
+								<div class="card">
+									<div class="card-head text-center">星期六</div>
+									<div class="card-body" data-toggle="modal" data-target="#cardModal" onclick="viewModal(this)">
+										<img class="img-fluid rounded" v-bind:src=("imgs/"+choosenWeek+"/"+6+".jpg") onerror="this.src='settings/default.png'">
+									</div>
+								</div>
+							</div>
+							<div class="col">
+								<div class="card">
+									<div class="card-head text-center">星期日</div>
+									<div class="card-body" data-toggle="modal" data-target="#cardModal" onclick="viewModal(this)">
+										<img class="img-fluid rounded" v-bind:src=("imgs/"+choosenWeek+"/"+7+".jpg") onerror="this.src='settings/default.png'">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<hr />
-			<label>当前展示周:</label>
-			<select id="selectedWeek" @change="selectWeek" v-bind:value="choosenWeek">
-				<option v-for="n in week" onclick="selectClick()" v-bind:value="n">第{{n}}周</option>
-			</select>
-			<hr />
-			<hr />
-			<hr />
-			<hr />
-			<hr />
+		</div>
+
+		<div class="jumbotron text-center" style="margin-bottom:0">
+			<div class="row">
+				<div class="col">
+					<a href="https://github.com/0newing/PicViewPage/issues/new" target="_blank">提交意见</a>
+				</div>
+				<div class="col">
+					<a href="https://github.com/0newing/PicViewPage" target="_blank">去GitHub查看此项目</a>
+				</div>
+				<div class="col">
+					<p>作者邮箱：<a href="mailto:disciple_sneaker@163.com">disciple_sneaker@163.com</a></p>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="cardModal">
+			<div class="modal-dialog modal-lg" style="width: 70vh;">
+				<div class="modal-content">
+					<div class="modal-header text-center">
+						<h4 class="modal-title" id="modalHeadInfo"></h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body" id="modalBodyContent" align="center">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">返回</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="helpModal">
+			<div class="modal-dialog modal-lg" style="width: 70vh;">
+				<div class="modal-content">
+					<div class="modal-header text-center">
+						<h4 class="modal-title">使用说明</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body" align="left">
+						<h5>简要使用步骤</h5>
+						<ol>
+							<li>将你的图片放到imgs文件夹下，并使用类似'imgs/week/day.jpg'这样的路径(如：'imgs/45/1.jpg')。其中第二级文件夹名表示一年中的第几周，文件名的数字表示一周中的第几天(周一为一周的第一天)</li>
+							<li>打开view.html网页就可以浏览啦</li>
+						</ol>
+						<hr />
+						<h5>DIY</h5>
+						<ul>
+							<li>如果要浏览的那一周对应的文件夹下没有任何图片的话是会显示一张"你什么都没画"的图片作为提示的，而这张图片是可以自定义的，只需要将settings路径下的default.png图片换成你想要的图片即可</li>
+							<li>同样的，头像那张图的话只要换掉head.png就好啦~</li>
+						</ul>
+						<hr />
+						<h5>注意事项</h5>
+						<ul>
+							<li>要展示的图片请使用jpg格式</li>
+							<li>关于图片的大小最好是使用16:9的比例</li>
+							<li>如果发现样式有问题的话，请使用谷歌浏览器或360的极速模式再试试</li>
+							<li>如果有什么意见或者发现了Bug的话欢迎提Issue给我~~~</li>
+						</ul>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">返回</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
